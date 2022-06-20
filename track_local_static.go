@@ -4,6 +4,8 @@
 package webrtc
 
 import (
+	"fmt"
+	"runtime/debug"
 	"strings"
 	"sync"
 
@@ -72,7 +74,8 @@ func (s *TrackLocalStaticRTP) Bind(t TrackLocalContext) (RTPCodecParameters, err
 		return codec, nil
 	}
 
-	return RTPCodecParameters{}, ErrUnsupportedCodec
+	extra := fmt.Sprintf("[100ms-debug] TrackID=%s Params=%#v CodecParams=%#v\n [stack=%s]", t.id, parameters, t.CodecParameters(), string(debug.Stack()))
+	return RTPCodecParameters{}, fmt.Errorf("%v {%v}", ErrUnsupportedCodec, extra)
 }
 
 // Unbind implements the teardown logic when the track is no longer needed. This happens
