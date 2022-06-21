@@ -58,6 +58,8 @@ type mediaEngineHeaderExtension struct {
 // configuration of those codecs. A MediaEngine must not be shared between
 // PeerConnections.
 type MediaEngine struct {
+	HMSHotFix bool
+
 	// If we have attempted to negotiate a codec type yet.
 	negotiatedVideo, negotiatedAudio bool
 
@@ -537,13 +539,13 @@ func (m *MediaEngine) getCodecsByKind(typ RTPCodecType) []RTPCodecParameters {
 	defer m.mu.RUnlock()
 
 	if typ == RTPCodecTypeVideo {
-		if m.negotiatedVideo {
+		if m.negotiatedVideo && !m.HMSHotFix {
 			return m.negotiatedVideoCodecs
 		}
 
 		return m.videoCodecs
 	} else if typ == RTPCodecTypeAudio {
-		if m.negotiatedAudio {
+		if m.negotiatedAudio && !m.HMSHotFix {
 			return m.negotiatedAudioCodecs
 		}
 
